@@ -1,7 +1,10 @@
 <template>
   <div id="app">
-    @{{ user.username }}: {{ fullname }}
-
+    @{{ user.username }}:  {{ fullname }}
+    <br />
+    Followers: {{ followers }}
+    <br />
+    <button @click="onclick();">Click Me!</button>
   </div>
 </template>
 
@@ -11,6 +14,7 @@ export default {
   name: 'App',
   data() {
     return{
+      is_loading: false,
       followers: 0,
       user:{
         id: 0,
@@ -22,10 +26,25 @@ export default {
       }
     }
   },
+  watch:{
+    followers(newvalue, oldvalue){
+      if(oldvalue < newvalue){
+        console.log(`${this.user.username} has gained a follower.`);
+      }
+    }
+  },
   computed:{
     fullname(){
       return `${this.user.firstname} ${this.user.lastname}`
     } 
+  },
+  methods:{
+    onclick: function(){
+      this.followers++;
+    }
+  },
+  mounted(){
+    this.followers = 1;
   }
 }
 </script>
