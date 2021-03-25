@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <user-profile></user-profile>
+    <UserProfile />
   </div>
 </template>
 

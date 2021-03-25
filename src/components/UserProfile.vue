@@ -8,6 +8,21 @@
         <div class="user-profile__follower-count">
           <strong>Followers: </strong> {{ followers }}
         </div>
+        <form class="user-profile__newtwoot"  @submit.prevent="createNewTwoot">
+          <label for="newtwoot"><strong>New Twoot</strong></label>
+          <textarea id="newtwoot" rows="4" v-model="newTwootContent"/>
+          <label for="newTwootType">Type</label>
+          <select id="newTwootType" v-model="newTwootType">
+            <option :value="option.value" 
+                    v-for="option in twootTypes" 
+                    :key="option.value">
+                    {{ option.name }}
+            </option>
+          </select>
+          <button>
+            Twoot!!
+          </button>
+        </form>
       </div>
     </div>
     <div class="user-profile__twoots-wrapper">
@@ -31,6 +46,13 @@ export default {
   },
   data() {
     return{
+      newTwootContent:'',
+      newTwootType:'instant',
+      twootTypes:[
+        {value:"draft", name:"Draft"},
+        {value:"instant", name:"Instant Twoot"}
+
+      ],
       is_loading: false,
       followers: 0,
       user:{
@@ -65,6 +87,15 @@ export default {
     },
     toggleFavorite(id){
       console.log(`New favorite #${id}`);
+    },
+    createNewTwoot(){
+      if(this.newTwootContent && this.newTwootType!=='draft'){
+        this.user.twoots.unshift({
+          id: this.user.twoots.length,
+          content: this.newTwootContent
+        })
+        this.newTwootContent = '';
+      }
     }
   },
   mounted(){
@@ -89,6 +120,13 @@ export default {
   border: 1px solid #DFE3E8;
   margin-bottom: auto;
 }
+
+.user-profile__newtwoot {
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
 h1 {
   margin: 0;
 }
