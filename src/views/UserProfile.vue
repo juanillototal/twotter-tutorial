@@ -3,6 +3,7 @@
     <div class="user-profile__sidebar">
       <div class="user-profile__user-panel">
         <h1 class="user-profile__username">@{{ state.user.username }}</h1>
+        <h3>User Id: {{ userId }}</h3>
         <div class="user-profile__admin-badge" v-if="state.user.isAdmin">Admin</div>
         <div class="user-profile__non-admin-badge" v-else>Not Admin</div>
         <div class="user-profile__follower-count">
@@ -37,15 +38,21 @@
 
 <script>
 
-import TwootItem from './TwootItem.vue'
+import { useRoute } from 'vue-router'
+import TwootItem from '../components/TwootItem.vue'
 import { reactive, computed } from 'vue'
+import { users } from '../assets/users.js'
 
 export default {
   name: 'UserProfile',
   components:{
     TwootItem 
   },
+
   setup(){
+    const route = useRoute();
+    const userId = computed(() => route.params.userId);
+
     const state = reactive({
       newTwootContent:'',
       newTwootType:'instant',
@@ -56,18 +63,7 @@ export default {
       ],
       is_loading: false,
       followers: 0,
-      user:{
-        id: 0,
-        username: '_juanillo',
-        firstname: 'juanillo',
-        lastname: 'total',
-        email: 'jt@gmail.com',
-        isAdmin: true ,
-        twoots: [
-          {id:1, content: "twoots is amazing."},
-          {id:2, content: "subscribe to 'The end of world!'"}
-        ]
-      }
+      user: users[userId.value - 1] || users[1]
     }
     );
 
@@ -98,7 +94,8 @@ export default {
       fullname,
       toggleFavorite,
       createNewTwoot,
-      onclick
+      onclick,
+      userId
       };
     }
   }

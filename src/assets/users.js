@@ -1,4 +1,4 @@
-{ "users": [
+export const users = [
     {
       "id": 1,
       "username": "_MitchellRomney",
@@ -38,5 +38,4 @@
       "isAdmin": false,
       "twoots": []
     }
-  ]
-}
+  ];
