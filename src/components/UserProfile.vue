@@ -2,19 +2,19 @@
   <div class="user-profile">
     <div class="user-profile__sidebar">
       <div class="user-profile__user-panel">
-        <h1 class="user-profile__username">@{{ user.username }}</h1>
-        <div class="user-profile__admin-badge" v-if="user.isAdmin">Admin</div>
+        <h1 class="user-profile__username">@{{ state.user.username }}</h1>
+        <div class="user-profile__admin-badge" v-if="state.user.isAdmin">Admin</div>
         <div class="user-profile__non-admin-badge" v-else>Not Admin</div>
         <div class="user-profile__follower-count">
-          <strong>Followers: </strong> {{ followers }}
+          <strong>Followers: </strong> {{ state.followers }}
         </div>
         <form class="user-profile__newtwoot"  @submit.prevent="createNewTwoot" :class="{ '--exceeded': newtwootcharcount > 180 }">
           <label for="newtwoot"><strong>New Twoot</strong> {{ newtwootcharcount }}/180</label>
-          <textarea id="newtwoot" rows="4" v-model="newTwootContent"/>
+          <textarea id="newtwoot" rows="4" v-model="state.newTwootContent"/>
           <label for="newTwootType">Type</label>
-          <select id="newTwootType" v-model="newTwootType">
+          <select id="newTwootType" v-model="state.newTwootType">
             <option :value="option.value" 
-                    v-for="option in twootTypes" 
+                    v-for="option in state.twootTypes" 
                     :key="option.value">
                     {{ option.name }}
             </option>
@@ -26,10 +26,10 @@
       </div>
     </div>
     <div class="user-profile__twoots-wrapper">
-      <TwootItem v-for="twoot in user.twoots" 
+      <TwootItem v-for="twoot in state.user.twoots" 
         :key="twoot.id" 
         :twoot="twoot" 
-        :username="user.username" 
+        :username="state.user.username" 
         @favorite="toggleFavorite"/>
     </div>
   </div>
@@ -38,14 +38,15 @@
 <script>
 
 import TwootItem from './TwootItem.vue'
+import { reactive, computed } from 'vue'
 
 export default {
   name: 'UserProfile',
   components:{
     TwootItem 
   },
-  data() {
-    return{
+  setup(){
+    const state = reactive({
       newTwootContent:'',
       newTwootType:'instant',
       twootTypes:[
@@ -68,43 +69,39 @@ export default {
         ]
       }
     }
-  },
-  watch:{
-    followers(newvalue, oldvalue){
-      if(oldvalue < newvalue){
-        console.log(`${this.user.username} has gained a follower.`);
-      }
-    }
-  },
-  computed:{
-    fullname(){
-      return `${this.user.firstname} ${this.user.lastname}`
-    },
-    newtwootcharcount(){
-      return this.newTwootContent.length;
-    }
-  },
-  methods:{
-    onclick: function(){
+    );
+
+    const newtwootcharcount = computed(() => state.newTwootContent.length );
+    const fullname = computed(() => `${state.user.firstname} ${state.user.lastname}` );
+
+    function onclick(){
       this.followers++;
-    },
-    toggleFavorite(id){
+    }
+
+    function toggleFavorite(id){
       console.log(`New favorite #${id}`);
-    },
-    createNewTwoot(){
-      if(this.newTwootContent && this.newTwootType!=='draft'){
-        this.user.twoots.unshift({
-          id: this.user.twoots.length,
-          content: this.newTwootContent
+    }
+
+    function createNewTwoot(){
+      if(state.newTwootContent && state.newTwootType!=='draft'){
+        state.user.twoots.unshift({
+          id: state.user.twoots.length,
+          content: state.newTwootContent
         })
-        this.newTwootContent = '';
+        state.newTwootContent = '';
       }
     }
-  },
-  mounted(){
-    this.followers = 1;
+
+    return {
+      state, 
+      newtwootcharcount,
+      fullname,
+      toggleFavorite,
+      createNewTwoot,
+      onclick
+      };
+    }
   }
-}
 </script>
 
 <style lang="scss" scoped>
